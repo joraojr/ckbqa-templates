@@ -28,7 +28,7 @@ from treelstm import Trainer
 # CONFIG PARSER
 from config import parse_args
 
-from fastText import load_model
+from fasttext import load_model
 
 EMBEDDING_DIM = 300
 
