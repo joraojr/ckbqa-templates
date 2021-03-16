@@ -9,10 +9,12 @@ import os
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
+
 def make_dirs(dirs):
     for d in dirs:
         if not os.path.exists(d):
             os.makedirs(d)
+
 
 def dependency_parse(filepath, cp='', tokenize=True):
     print('\nDependency parsing ' + filepath)
@@ -24,7 +26,7 @@ def dependency_parse(filepath, cp='', tokenize=True):
     pospath = os.path.join(dirpath, filepre + '.pos')
     lenpath = os.path.join(dirpath, filepre + '.len')
     tokenize_flag = '-tokenize - ' if tokenize else ''
-    cmd = ('java -cp %s DependencyParse -tokpath %s -parentpath %s -relpath %s -pospath %s -lenpath %s %s < %s'
+    cmd = ('java -cp %s lib/DependencyParse.java -tokpath %s -parentpath %s -relpath %s -pospath %s -lenpath %s %s < %s'
            % (cp, tokpath, parentpath, relpath, pospath, lenpath, tokenize_flag, filepath))
     print(cmd)
     os.system(cmd)
@@ -36,7 +38,7 @@ def constituency_parse(filepath, cp='', tokenize=True):
     tokpath = os.path.join(dirpath, filepre + '.toks')
     parentpath = os.path.join(dirpath, filepre + '.cparents')
     tokenize_flag = '-tokenize - ' if tokenize else ''
-    cmd = ('java -cp %s ConstituencyParse -tokpath %s -parentpath %s %s < %s'
+    cmd = ('java -cp %s lib/ConstituencyParse.java -tokpath %s -parentpath %s %s < %s'
            % (cp, tokpath, parentpath, tokenize_flag, filepath))
     os.system(cmd)
 
@@ -65,7 +67,6 @@ def split(filepath, dst_dir):
             open(os.path.join(dst_dir, 'id.txt'), 'w') as idfile, \
             open(os.path.join(dst_dir, 'input.txt'), 'w') as inputfile, \
             open(os.path.join(dst_dir, 'output.txt'), 'w') as outputfile:
-
         data = json.load(datafile)
         for datum in data:
             idfile.write(datum["_id"] + "\n")
@@ -90,6 +91,7 @@ def parse(dirpath, cp=''):
     dependency_parse(os.path.join(dirpath, 'input.txt'), cp=cp, tokenize=True)
     # constituency_parse(os.path.join(dirpath, 'input.txt'), cp=cp, tokenize=True)
 
+
 if __name__ == '__main__':
     print('=' * 80)
     print('Preprocessing LC-QUAD dataset')
@@ -113,7 +115,7 @@ if __name__ == '__main__':
     # Load Data
     df_train = pd.read_json(os.path.join(lc_quad_dir, "train-data.json"))
     df_test = pd.read_json(os.path.join(lc_quad_dir, "test-data.json"))
-    df = pd.concat([df_train, df_test], ignore_index = True)
+    df = pd.concat([df_train, df_test], ignore_index=True)
 
     desired_templates = df['sparql_template_id'].value_counts() >= 50
     desired_templates = desired_templates.index[desired_templates == True].tolist()
@@ -126,15 +128,16 @@ if __name__ == '__main__':
 
     for index in range(len(y)):
         id = y[index]
-        if id >= 300 and id < 500: # Collapse 3xx or 4xx templates to their corresponding template - 300 id since all that differentiates them is extra rdf:type class triple which can be added as an optional triple to SPARQL Query
+        if id >= 300 and id < 500:  # Collapse 3xx or 4xx templates to their corresponding template - 300 id since all that differentiates them is extra rdf:type class triple which can be added as an optional triple to SPARQL Query
             y[index] = id - 300
 
-        if y[index] == 152: # Effectively Template 152 and Template 151 are the same template or can be converted into single SPARQL Query
+        if y[
+            index] == 152:  # Effectively Template 152 and Template 151 are the same template or can be converted into single SPARQL Query
             y[index] = 151
 
     y = pd.Series(y)
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 42)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     split_data(X_train, y_train, train_dir)
     split_data(X_test, y_test, test_dir)
