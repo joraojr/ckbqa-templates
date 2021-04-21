@@ -83,6 +83,10 @@ class Trainer(object):
         for idx in tqdm(range(len(dataset)), desc='Training epoch ' + str(self.epoch + 1) + ''):
             tree, emb, target = self.get_data(dataset[indices[idx]], dataset.num_classes)
 
+            tree.to(self.args.device)
+            emb.to(self.args.device)
+            target.to(self.args.device)
+
             output = self.model.forward(tree, emb, training=True)
             err = self.criterion(output, target)
 
