@@ -78,7 +78,7 @@ class Trainer(object):
 
         self.optimizer.zero_grad()
         total_loss, k = 0.0, 0
-        indices = torch.randperm(len(dataset), dtype=torch.long, device='cpu')
+        indices = torch.randperm(len(dataset), dtype=torch.long)
 
         for idx in tqdm(range(len(dataset)), desc='Training epoch ' + str(self.epoch + 1) + ''):
             tree, emb, target = self.get_data(dataset[indices[idx]], dataset.num_classes)

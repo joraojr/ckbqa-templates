@@ -10,6 +10,7 @@ from .tree import Tree
 
 import nltk
 
+
 class LC_QUAD_Dataset(data.Dataset):
     def __init__(self, path, vocab_toks, vocab_pos, vocab_rels, num_classes):
         super(LC_QUAD_Dataset, self).__init__()
@@ -28,6 +29,7 @@ class LC_QUAD_Dataset(data.Dataset):
         else:
             self.labels = torch.zeros(len(self.toks_sentences), dtype=torch.float)
         self.size = self.labels.size(0)
+        #asd
 
     def __len__(self):
         return self.size
@@ -41,13 +43,13 @@ class LC_QUAD_Dataset(data.Dataset):
         return (tree, toks_sent, pos_sent, rels_sent, label)
 
     def read_sentences(self, filename, vocab):
-        with open(filename, 'r') as f:
-            sentences = [self.read_sentence(line, vocab) for line in tqdm(f.readlines())]
-        return sentences
 
-    def read_sentence(self, line, vocab):
-        indices = vocab.convertToIdx(line.split(), Constants.UNK_WORD)
-        return torch.tensor(indices, dtype=torch.long, device='cpu')
+        with open(filename, 'r') as f:
+            sentences = []
+            for line in tqdm(f.readlines()):
+                indices = vocab.convertToIdx(line.split(), Constants.UNK_WORD)
+                sentences.append(torch.tensor(indices, dtype=torch.long))
+        return sentences
 
     def read_trees(self, filename):
         with open(filename, 'r') as f:
@@ -85,5 +87,5 @@ class LC_QUAD_Dataset(data.Dataset):
     def read_labels(self, filename):
         with open(filename, 'r') as f:
             labels = list(map(lambda x: float(x), f.readlines()))
-            labels = torch.tensor(labels, dtype=torch.float, device='cpu')
+            labels = torch.tensor(labels, dtype=torch.float)
         return labels

@@ -26,14 +26,14 @@ def load_word_vectors(path):
         contents = f.readline().rstrip('\n').split(' ')
         dim = len(contents[1:])
     words = [None] * (count)
-    vectors = torch.zeros(count, dim, dtype=torch.float, device='cpu')
+    vectors = torch.zeros(count, dim, dtype=torch.float)
     with open(path + '.txt', 'r', encoding='utf8', errors='ignore') as f:
         idx = 0
         for line in f:
             contents = line.rstrip('\n').split(' ')
             words[idx] = contents[0]
             values = list(map(float, contents[1:]))
-            vectors[idx] = torch.tensor(values, dtype=torch.float, device='cpu')
+            vectors[idx] = torch.tensor(values, dtype=torch.float)
             idx += 1
     with open(path + '.vocab', 'w', encoding='utf8', errors='ignore') as f:
         for word in words:
@@ -62,6 +62,6 @@ def map_label_to_target(label, num_classes, vocab_output):
     return target
     # return torch.tensor(vocab_output.getIndex(str(int(label))))
 
-    # target = torch.zeros(1, num_classes, dtype=torch.long, device='cpu')
+    # target = torch.zeros(1, num_classes, dtype=torch.long)
     # target[0, ] = 1
     # return target
