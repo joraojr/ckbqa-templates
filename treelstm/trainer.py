@@ -6,6 +6,7 @@ from . import utils
 
 from . import Constants
 
+
 class Trainer(object):
     def __init__(self, args, model, embeddings, vocabs, criterion, optimizer):
         super(Trainer, self).__init__()
@@ -15,7 +16,7 @@ class Trainer(object):
         self.embeddings = embeddings
         self.vocabs = vocabs
         self.criterion = criterion
-        self.optimizer = optimizer.to(self.device)
+        self.optimizer = optimizer
         self.epoch = 0
 
     def train_embeddings(self):
@@ -48,7 +49,7 @@ class Trainer(object):
                 char_vector = []
                 for char in word:
                     if self.vocabs['chars'].getIndex(char) != None:
-                        char_vector.append(self.vocabs['chars'].getIndex(char) )
+                        char_vector.append(self.vocabs['chars'].getIndex(char))
                     else:
                         char_vector.append(0)
 
@@ -84,8 +85,8 @@ class Trainer(object):
         for idx in tqdm(range(len(dataset)), desc='Training epoch ' + str(self.epoch + 1) + ''):
             tree, emb, target = self.get_data(dataset[indices[idx]], dataset.num_classes)
 
-            emb.to(self.device)
-            target.to(self.device)
+            #  emb.to(self.device)
+            #  target.to(self.device)
 
             output = self.model.forward(tree, emb, training=True)
             err = self.criterion(output, target)
