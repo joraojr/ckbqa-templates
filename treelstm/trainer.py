@@ -15,7 +15,7 @@ class Trainer(object):
         self.embeddings = embeddings
         self.vocabs = vocabs
         self.criterion = criterion
-        self.optimizer = optimizer
+        self.optimizer = optimizer.to(self.device)
         self.epoch = 0
 
     def train_embeddings(self):
