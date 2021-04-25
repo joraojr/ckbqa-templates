@@ -4,9 +4,9 @@ def parse_args():
     parser = argparse.ArgumentParser(
         description='PyTorch TreeLSTM for Sentence Similarity on Dependency Trees')
     # data arguments
-    parser.add_argument('--data', default='data/lc-quad/',
+    parser.add_argument('--data', default='data/lc-quad-2/',
                         help='path to dataset')
-    parser.add_argument('--save', default='checkpoints/',
+    parser.add_argument('--save', default='checkpoints-lcquad2/',
                         help='directory to save checkpoints in')
     parser.add_argument('--expname', type=str, default='rnn-question-answering',
                         help='Name to identify experiment')
@@ -16,9 +16,9 @@ def parse_args():
     parser.add_argument('--freeze_embed', action='store_true',
                         help='Freeze word embeddings')
     # training arguments
-    parser.add_argument('--epochs', default=100, type=int,
+    parser.add_argument('--epochs', default=7, type=int,
                         help='number of total epochs to run')
-    parser.add_argument('--batchsize', default=25, type=int,
+    parser.add_argument('--batchsize', default=500, type=int,
                         help='batchsize for optimizer updates')
     parser.add_argument('--lr', default=1e-2, type=float,
                         metavar='LR', help='initial learning rate')
@@ -41,4 +41,5 @@ def parse_args():
     parser.set_defaults(cuda=True)
 
     args = parser.parse_args()
+    print(args)
     return args

@@ -178,7 +178,7 @@ def main():
 
     # create trainer object for training and testing
     trainer = Trainer(args, model, {'toks': toks_embedding_model, 'pos': pos_embedding_model, 'rels': rels_embedding_model, 'chars': chars_embedding_model}, {'toks': vocab_toks, 'chars': vocab_chars, 'output': vocab_output}, criterion, optimizer)
-    file_name = "analysis/expname={},input_dim={},mem_dim={},lr={},emblr={},wd={},epochs={}".format(args.expname, input_dim, args.mem_dim, args.lr, args.emblr, args.wd, args.epochs)
+    file_name = "analysis-lcquad-2/expname={},input_dim={},mem_dim={},lr={},emblr={},wd={},epochs={}".format(args.expname, input_dim, args.mem_dim, args.lr, args.emblr, args.wd, args.epochs)
 
     for epoch in range(args.epochs):
         print("\n" * 5)
