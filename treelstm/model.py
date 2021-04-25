@@ -35,6 +35,8 @@ class ChildSumTreeLSTM(nn.Module):
         self.output_module = output_module
 
     def node_forward(self, inputs, child_c, child_h):
+        inputs = inputs.to(self.device)
+
         child_h_sum = F.torch.sum(torch.squeeze(child_h, 1), 0)
         print("Child" + str(child_h_sum.device))
         print("device" + str(self.device))
