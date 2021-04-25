@@ -37,6 +37,8 @@ class ChildSumTreeLSTM(nn.Module):
     def node_forward(self, inputs, child_c, child_h):
         child_h_sum = F.torch.sum(torch.squeeze(child_h, 1), 0)
         child_h_sum.to(self.device)
+        print(self.child_h_sum.device)
+
         i = F.sigmoid(self.ix(inputs) + self.ih(child_h_sum))
         o = F.sigmoid(self.ox(inputs) + self.oh(child_h_sum))
         u = F.tanh(self.ux(inputs) + self.uh(child_h_sum))
@@ -107,9 +109,12 @@ class Classifier(nn.Module):
 class TreeLSTM(nn.Module):
     def __init__(self, in_dim, mem_dim, num_classes, criterion, vocab_output, device, dropout=False):
         super(TreeLSTM, self).__init__()
+        print(device)
         self.tree_module = ChildSumTreeLSTM(in_dim, mem_dim, num_classes, criterion, vocab_output, device)
         print(self.tree_module.device)
         self.classifier = Classifier(mem_dim, num_classes, dropout)
+        print(self.classifier.device)
+
         self.tree_module.set_output_module(self.classifier)
 
     def set_dropout(self, dropout):
