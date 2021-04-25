@@ -141,6 +141,7 @@ def main():
         args.num_classes,
         criterion,
         vocab_output,
+        device,
         dropout=True
     )
 
@@ -155,8 +156,8 @@ def main():
     rels_emb = generate_one_hot_vectors(vocab_rels)
 
     # plug these into embedding matrix inside model
-    chars_embedding_model.state_dict()['weight'].copy_(chars_emb)
     toks_embedding_model.state_dict()['weight'].copy_(toks_emb)
+    chars_embedding_model.state_dict()['weight'].copy_(chars_emb)
     pos_embedding_model.state_dict()['weight'].copy_(pos_emb)
     rels_embedding_model.state_dict()['weight'].copy_(rels_emb)
 
@@ -181,7 +182,7 @@ def main():
 
     for epoch in range(args.epochs):
         print("\n" * 5)
-        scheduler.step()
+        scheduler.step() # TODO FIX IT to Detected call of `lr_scheduler.step()` before `optimizer.step()
 
         # Train Model
         trainer.train(train_dataset)
