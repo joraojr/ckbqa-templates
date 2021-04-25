@@ -108,6 +108,7 @@ class TreeLSTM(nn.Module):
     def __init__(self, in_dim, mem_dim, num_classes, criterion, vocab_output, device, dropout=False):
         super(TreeLSTM, self).__init__()
         self.tree_module = ChildSumTreeLSTM(in_dim, mem_dim, num_classes, criterion, vocab_output, device)
+        print(self.tree_module.device)
         self.classifier = Classifier(mem_dim, num_classes, dropout)
         self.tree_module.set_output_module(self.classifier)
 
