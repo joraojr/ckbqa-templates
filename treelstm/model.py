@@ -40,7 +40,7 @@ class ChildSumTreeLSTM(nn.Module):
         child_h_sum = F.torch.sum(torch.squeeze(child_h, 1), 0)
         print("Child" + str(child_h_sum.device))
         print("device" + str(self.device))
-        child_h_sum = child_h_sum.to(self.device)
+#        child_h_sum = child_h_sum.to(self.device)
         print(str(child_h_sum.device))
 
         i = F.sigmoid(self.ix(inputs) + self.ih(child_h_sum))
@@ -63,7 +63,8 @@ class ChildSumTreeLSTM(nn.Module):
             self.forward(tree.children[idx], inputs, training)
 
         child_c, child_h = self.get_child_states(tree)
-        child_c.to(self.device), child_h.to(self.device)
+        child_c= child_c.to(self.device)
+        child_h= child_h.to(self.device)
         tree.state = self.node_forward(inputs[tree.idx], child_c, child_h)
         output = self.output_module.forward(tree.state[1], training)
 
