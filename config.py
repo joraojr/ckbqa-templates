@@ -18,7 +18,7 @@ def parse_args():
     # training arguments
     parser.add_argument('--epochs', default=7, type=int,
                         help='number of total epochs to run')
-    parser.add_argument('--batchsize', default=500, type=int,
+    parser.add_argument('--batchsize', default=25, type=int,
                         help='batchsize for optimizer updates')
     parser.add_argument('--lr', default=1e-2, type=float,
                         metavar='LR', help='initial learning rate')
