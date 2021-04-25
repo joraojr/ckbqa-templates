@@ -5,10 +5,12 @@ from torch.autograd import Variable as Var
 from . import utils
 from . import Constants
 
+
 # module for childsumtreelstm
 class ChildSumTreeLSTM(nn.Module):
-    def __init__(self, in_dim, mem_dim, num_classes, criterion, vocab_output):
+    def __init__(self, in_dim, mem_dim, num_classes, criterion, vocab_output, device):
         super(ChildSumTreeLSTM, self).__init__()
+        self.device = device
         self.in_dim = in_dim
         self.mem_dim = mem_dim
         self.num_classes = num_classes
@@ -50,11 +52,12 @@ class ChildSumTreeLSTM(nn.Module):
         h = F.torch.mul(o, F.tanh(c))
         return c, h
 
-    def forward(self, tree, inputs, training = False):
+    def forward(self, tree, inputs, training=False):
         for idx in range(tree.num_children):
             self.forward(tree.children[idx], inputs, training)
 
         child_c, child_h = self.get_child_states(tree)
+        child_c.to(self.device), child_h.to(self.device)
         tree.state = self.node_forward(inputs[tree.idx], child_c, child_h)
         output = self.output_module.forward(tree.state[1], training)
 
@@ -79,6 +82,7 @@ class ChildSumTreeLSTM(nn.Module):
                 child_h[idx] = tree.children[idx].state[1]
         return child_c, child_h
 
+
 class Classifier(nn.Module):
     def __init__(self, mem_dim, num_classes, dropout=False):
         super(Classifier, self).__init__()
@@ -98,17 +102,18 @@ class Classifier(nn.Module):
             out = self.logsoftmax(self.l1(vec))
         return out
 
+
 # putting the whole model together
 class TreeLSTM(nn.Module):
-    def __init__(self, in_dim, mem_dim, num_classes, criterion, vocab_output, dropout=False):
+    def __init__(self, in_dim, mem_dim, num_classes, criterion, vocab_output, device, dropout=False):
         super(TreeLSTM, self).__init__()
-        self.tree_module = ChildSumTreeLSTM(in_dim, mem_dim, num_classes, criterion, vocab_output)
+        self.tree_module = ChildSumTreeLSTM(in_dim, mem_dim, num_classes, criterion, vocab_output, device)
         self.classifier = Classifier(mem_dim, num_classes, dropout)
         self.tree_module.set_output_module(self.classifier)
 
     def set_dropout(self, dropout):
         self.classifier.set_dropout(dropout)
 
-    def forward(self, tree, inputs, training = False):
+    def forward(self, tree, inputs, training=False):
         output = self.tree_module(tree, inputs, training)
         return output
