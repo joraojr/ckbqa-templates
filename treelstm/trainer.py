@@ -116,6 +116,9 @@ class Trainer(object):
             torch.no_grad()
             tree, emb, target = self.get_data(dataset[idx], dataset.num_classes)
 
+            emb = emb.to(self.device)
+            target = target.to(self.device)
+
             output = self.model.forward(tree, emb, training=True)
             err = self.criterion(output, target)
             total_loss += err.item()
