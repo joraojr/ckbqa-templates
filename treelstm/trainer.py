@@ -1,6 +1,7 @@
 import torch
 import torch.nn.functional as F
 from torch.autograd import Variable as Var
+from torch.utils.data import DataLoader
 from tqdm import tqdm
 from . import utils
 
@@ -44,7 +45,7 @@ class Trainer(object):
 
         for word in words:
             if word == Constants.UNK_WORD:
-                char_vectors.append(F.torch.zeros(self.vocabs['chars'].size()))
+                char_vectors.append(torch.zeros(self.vocabs['chars'].size()))
             else:
                 char_vector = []
                 for char in word:
@@ -54,9 +55,9 @@ class Trainer(object):
                         char_vector.append(0)
 
                 char_vector = torch.tensor(char_vector)
-                char_vectors.append(F.torch.sum(self.embeddings['chars'](char_vector), 0) / len(char_vector))
+                char_vectors.append(torch.sum(self.embeddings['chars'](char_vector), 0) / len(char_vector))
 
-        return F.torch.unsqueeze(torch.stack(char_vectors), 1)
+        return torch.unsqueeze(torch.stack(char_vectors), 1)
 
     def get_data(self, data, num_classes):
         tree, toks_sent, pos_sent, rels_sent, label = data
@@ -66,9 +67,9 @@ class Trainer(object):
 
         target = Var(utils.map_label_to_target(label, num_classes, self.vocabs['output']))
 
-        toks_emb = F.torch.unsqueeze(self.embeddings['toks'](toks_sent), 1)
-        pos_emb = F.torch.unsqueeze(self.embeddings['pos'](pos_sent), 1)
-        rels_emb = F.torch.unsqueeze(self.embeddings['rels'](rels_sent), 1)
+        toks_emb = torch.unsqueeze(self.embeddings['toks'](toks_sent), 1)
+        pos_emb = torch.unsqueeze(self.embeddings['pos'](pos_sent), 1)
+        rels_emb = torch.unsqueeze(self.embeddings['rels'](rels_sent), 1)
         chars_emb = self.get_char_vector(toks_sent)
 
         return tree, torch.cat((toks_emb, pos_emb, rels_emb, chars_emb), 2), target
@@ -82,13 +83,24 @@ class Trainer(object):
         total_loss, k = 0.0, 0
         indices = torch.randperm(len(dataset), dtype=torch.long)
 
+        #        loader = DataLoader(
+        #            dataset,
+        #            batch_size=self.args.batchsize,
+        #            shuffle=False,
+        #        )#
+        #
+        #        for batch_idx, data in enumerate(loader):
+        #            print((batch_idx, data))##
+
+        # pass
+
         for idx in tqdm(range(len(dataset)), desc='Training epoch ' + str(self.epoch + 1) + ''):
             tree, emb, target = self.get_data(dataset[indices[idx]], dataset.num_classes)
 
             emb = emb.to(self.device)
             target = target.to(self.device)
 
-            output = self.model.forward(tree, emb, training=True)
+            output = self.model(tree, emb, training=True)
             err = self.criterion(output, target)
 
             total_loss += err.item()

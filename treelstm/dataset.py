@@ -18,7 +18,6 @@ class LC_QUAD_Dataset(data.Dataset):
         self.vocab_pos = vocab_pos
         self.vocab_rels = vocab_rels
         self.num_classes = num_classes
-
         self.toks_sentences = self.read_sentences(os.path.join(path, 'input.toks'), self.vocab_toks)
         self.pos_sentences = self.read_sentences(os.path.join(path, 'input.pos'), self.vocab_pos)
         self.rels_sentences = self.read_sentences(os.path.join(path, 'input.rels'), self.vocab_rels)
@@ -29,7 +28,7 @@ class LC_QUAD_Dataset(data.Dataset):
         else:
             self.labels = torch.zeros(len(self.toks_sentences), dtype=torch.float)
         self.size = self.labels.size(0)
-        #asd
+        # asd
 
     def __len__(self):
         return self.size

@@ -35,21 +35,21 @@ class ChildSumTreeLSTM(nn.Module):
         self.output_module = output_module
 
     def node_forward(self, inputs, child_c, child_h):
-        child_h_sum = F.torch.sum(torch.squeeze(child_h, 1), 0)
+        child_h_sum = torch.sum(torch.squeeze(child_h, 1), 0)
 
-        i = F.sigmoid(self.ix(inputs) + self.ih(child_h_sum))
-        o = F.sigmoid(self.ox(inputs) + self.oh(child_h_sum))
-        u = F.tanh(self.ux(inputs) + self.uh(child_h_sum))
+        i = torch.sigmoid(self.ix(inputs) + self.ih(child_h_sum))
+        o = torch.sigmoid(self.ox(inputs) + self.oh(child_h_sum))
+        u = torch.tanh(self.ux(inputs) + self.uh(child_h_sum))
 
         # add extra singleton dimension
-        fx = F.torch.unsqueeze(self.fx(inputs), 1)
-        f = F.torch.cat([self.fh(child_hi) + fx for child_hi in child_h], 0)
-        f = F.sigmoid(f)
+        fx = torch.unsqueeze(self.fx(inputs), 1)
+        f = torch.cat([self.fh(child_hi) + fx for child_hi in child_h], 0)
+        f = torch.sigmoid(f)
 
-        fc = F.torch.squeeze(F.torch.mul(f, child_c), 1)
+        fc = torch.squeeze(torch.mul(f, child_c), 1)
 
-        c = F.torch.mul(i, u) + F.torch.sum(fc, 0)
-        h = F.torch.mul(o, F.tanh(c))
+        c = torch.mul(i, u) + torch.sum(fc, 0)
+        h = torch.mul(o, torch.tanh(c))
         return c, h
 
     def forward(self, tree, inputs, training=False):
@@ -57,8 +57,8 @@ class ChildSumTreeLSTM(nn.Module):
             self.forward(tree.children[idx], inputs, training)
 
         child_c, child_h = self.get_child_states(tree)
-        child_c= child_c.to(self.device)
-        child_h= child_h.to(self.device)
+        child_c = child_c.to(self.device)
+        child_h = child_h.to(self.device)
         tree.state = self.node_forward(inputs[tree.idx], child_c, child_h)
         output = self.output_module.forward(tree.state[1], training)
 

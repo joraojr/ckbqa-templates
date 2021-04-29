@@ -1,0 +1,25 @@
+Repetições,Dummy Template dbpedia18,id
+3714,SELECT ?answer WHERE { ?statement1 DUMMY_P_1  DUMMY_O_1  . ?statement1 DUMMY_P_2  DUMMY_O_2 . ?statement1 DUMMY_P_3  ?X . ?statement2 DUMMY_P_4  ?X. ?statement2 DUMMY_P_5  DUMMY_O_5  . ?statement2 DUMMY_P_6  ?answer . },0
+3304,select distinct ?answer where { ?statement DUMMY_P_1  DUMMY_O_1  . ?statement DUMMY_P_2  DUMMY_O_2  . ?statement DUMMY_P_3  ?answer. },1
+2969,select distinct ?value  where {?statement DUMMY_P_1  DUMMY_O_1  .?statement DUMMY_P_2  DUMMY_O_2  .?statement DUMMY_P_3  DUMMY_O_3  .?statement DUMMY_P_4  ?value. },2
+2943,select distinct ?obj  where {?statement DUMMY_P_1  DUMMY_O_1  .?statement DUMMY_P_2  DUMMY_O_2  .?statement DUMMY_P_3  ?obj .?statement DUMMY_P_4  DUMMY_O_4 },3
+2505,SELECT ?answer WHERE { ?statement1 DUMMY_P_1  DUMMY_O_1  . ?statement1 DUMMY_P_2  DUMMY_O_2 . ?statement1 DUMMY_P_3  ?answer . ?statement2 DUMMY_P_4  ?answer. ?statement2 DUMMY_P_5  DUMMY_O_5  . ?statement2 DUMMY_P_6  DUMMY_O_6  . },4
+2042,select distinct ?subj where { ?statement DUMMY_P_1  ?subj . ?statement DUMMY_P_2  DUMMY_O_2  . ?statement DUMMY_P_3  DUMMY_O_3  . ?subj DUMMY_P_4  DUMMY_O_4  },5
+1872,select distinct ?obj where { ?statement DUMMY_P_1  DUMMY_O_1  . ?statement DUMMY_P_2  DUMMY_O_2  . ?statement DUMMY_P_3  ?obj . ?obj DUMMY_P_4  DUMMY_O_4  },6
+1672,ASK { ?statement1 DUMMY_P_1  DUMMY_O_1  . ?statement1 DUMMY_P_2  DUMMY_O_2 . ?statement1 DUMMY_P_3  ?obj. filter(?obj DUMMY_F) },7
+902,"SELECT DISTINCT ?sbj ?sbj_label { ?statement1 DUMMY_P_1  ?sbj . ?statement1 DUMMY_P_2  DUMMY_O_2  . ?statement1 DUMMY_P_3  DUMMY_O_3 . ?sbj DUMMY_S_4 ?sbj_label . FILTER(CONTAINS(lcase(?sbj_label), DUMMY_F_3 )) . FILTER (lang(?sbj_label) = DUMMY_F_4 ) } LIMIT DUMMY_F",8
+902,"SELECT DISTINCT ?sbj ?sbj_label { ?statement1 DUMMY_P_1  ?sbj . ?statement1 DUMMY_P_2  DUMMY_O_2  . ?statement1 DUMMY_P_3  DUMMY_O_3 . ?sbj DUMMY_S_4 ?sbj_label . FILTER(STRSTARTS(lcase(?sbj_label), DUMMY_F_3 )) . FILTER (lang(?sbj_label) = DUMMY_F_4 ) } LIMIT DUMMY_F",9
+790,select distinct ?value1 ?value2 where { ?statement DUMMY_P_1  DUMMY_O_1  . ?statement DUMMY_P_2  DUMMY_O_2  . ?statement DUMMY_P_3  DUMMY_O_3 . ?statement DUMMY_P_4  ?value1 . ?statement DUMMY_P_5  ?value2 },10
+768,SELECT (COUNT(?sub) AS ?subs ) {?statement DUMMY_P_1  ?sub .?statement DUMMY_P_2  DUMMY_O_2  .?statement DUMMY_P_3  DUMMY_P_5 .},11
+766,select distinct ?dataprop1 ?obj where { ?statement DUMMY_P_1  DUMMY_O_1  . ?statement DUMMY_P_2  DUMMY_O_2  . ?statement DUMMY_P_3  ?obj . ?statement DUMMY_P_4  ?dataprop1 . },12
+740,SELECT ?ans_1 ?ans_2 WHERE { ?statement1 DUMMY_P_1  DUMMY_O_1  . ?statement1 DUMMY_P_2  DUMMY_O_2  . ?statement1 DUMMY_P_3  ?ans_1. ?statement2 DUMMY_P_4  DUMMY_O_4  . ?statement2 DUMMY_P_5  DUMMY_O_5  . ?statement2 DUMMY_P_6  ?ans_2. },13
+740,select distinct ?answer where { ?statement DUMMY_P_1   ?answer. ?statement DUMMY_P_2  DUMMY_O_2  . ?statement DUMMY_P_3  DUMMY_O_3 . },14
+656,SELECT (COUNT(?obj) AS ?objs ) {?statement DUMMY_P_1  DUMMY_O_1  .?statement DUMMY_P_2  DUMMY_O_2  .?statement DUMMY_P_3  ?obj .},15
+500,ASK { ?statement1 DUMMY_P_1  DUMMY_O_1  . ?statement1 DUMMY_P_2  DUMMY_O_2  . ?statement1 DUMMY_P_3  DUMMY_O_3 . },16
+500,ASK { ?statement1 DUMMY_P_1  DUMMY_O_1  . ?statement1 DUMMY_P_2  DUMMY_O_2  . ?statement1 DUMMY_P_3  DUMMY_O_3 . ?statement2 DUMMY_P_4  DUMMY_O_4  . ?statement2 DUMMY_P_5  DUMMY_O_5  . ?statement2 DUMMY_P_6  DUMMY_O_6 . },17
+405,"SELECT DISTINCT ?sbj ?sbj_label { ?statement1 DUMMY_P_1  ?sbj . ?statement1 DUMMY_P_2  DUMMY_O_2  . ?statement1 DUMMY_P_3  DUMMY_O_3 . ?statement2 DUMMY_P_4  ?sbj . ?statement2 DUMMY_P_5  DUMMY_O_5  . ?statement2 DUMMY_P_6  DUMMY_O_6 . ?sbj DUMMY_S_7 ?sbj_label . FILTER(CONTAINS(lcase(?sbj_label), DUMMY_F_6 )) . FILTER (lang(?sbj_label) = DUMMY_F_7 ) } LIMIT DUMMY_F",18
+405,"SELECT DISTINCT ?sbj ?sbj_label { ?statement1 DUMMY_P_1  ?sbj . ?statement1 DUMMY_P_2  DUMMY_O_2  . ?statement1 DUMMY_P_3  DUMMY_O_3 . ?statement2 DUMMY_P_4  ?sbj . ?statement2 DUMMY_P_5  DUMMY_O_5  . ?statement2 DUMMY_P_6  DUMMY_O_6 . ?sbj DUMMY_S_7 ?sbj_label . FILTER(STRSTARTS(lcase(?sbj_label), DUMMY_F_6 )) . FILTER (lang(?sbj_label) = DUMMY_F_7 ) } LIMIT DUMMY_F",19
+377,select ?ent where {?ent DUMMY_P_1  DUMMY_O_1 .?statement DUMMY_P_2  ?ent .?statement DUMMY_P_3  DUMMY_O_3 .?statement DUMMY_P_4  ?obj .}ORDER BY DESC(?obj)LIMIT DUMMY_F,20
+377,select ?ent where {?ent DUMMY_P_1  DUMMY_O_1 .?statement1 DUMMY_P_2  ?ent .?statement1 DUMMY_P_3  DUMMY_O_3 .?statement1 DUMMY_P_4  ?obj1.?statement2 DUMMY_P_5  ?ent .?statement2 DUMMY_P_6  DUMMY_O_6  .?statement2 DUMMY_P_7  DUMMY_O_7  .}ORDER BY DESC(?obj1)LIMIT DUMMY_F,21
+377,select ?ent where {?ent DUMMY_P_1  DUMMY_O_1 .?statement1 DUMMY_P_2  ?ent .?statement1 DUMMY_P_3  DUMMY_O_3 .?statement1 DUMMY_P_4  ?obj1.?statement2 DUMMY_P_5  ?ent .?statement2 DUMMY_P_6  DUMMY_O_6  .?statement2 DUMMY_P_7  DUMMY_O_7  .}ORDER BY ASC(?obj1)LIMIT DUMMY_F,22
+30226,,
