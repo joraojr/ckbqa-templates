@@ -4,9 +4,11 @@ Preprocessing script for LC-QUAD data.
 
 import glob
 import json
+import pickle
 import os
-
+from sklearn.preprocessing import LabelEncoder
 import pandas as pd
+import numpy as np
 from sklearn.model_selection import train_test_split
 
 
@@ -69,22 +71,47 @@ def build_vocab(filepaths, dst_path, lowercase=False, character_level=False):
 #             open(os.path.join(dst_dir, 'output.txt'), 'w') as outputfile:
 #         data = json.load(datafile)
 #         for datum in data:
-#             idfile.write(datum["_id"] + "\n")
-#             inputfile.write(datum["corrected_question"] + "\n")
-#             outputfile.write(str(datum["sparql_template_id"]) + "\n")
+#             idfile.write(datum["uid"] + "\n")
+#             inputfile.write(datum["question"] + "\n")
+#             outputfile.write(str(datum["template_id"]) + "\n")
 
 
-def split_data(X, y, dst_dir):
+def split_data(X, y, dst_dir, le):
     with open(os.path.join(dst_dir, 'id.txt'), 'w') as idfile, \
             open(os.path.join(dst_dir, 'input.txt'), 'w') as inputfile, \
             open(os.path.join(dst_dir, 'output.txt'), 'w') as outputfile:
         y = y.tolist()
 
+        print((X.shape, len(y)))
         for index in range(len(X)):
-            corrected_question = str(X.iloc[index]["corrected_question"]).strip()
-            idfile.write(str(X.iloc[index]["_id"]) + "\n")
+            corrected_question = str(X.iloc[index]["question"]).strip().replace("&nbsp", " ") \
+                .replace("\n", " ").replace("{", "").replace("}", "").replace("<", "").replace(">", "")
+            idfile.write(str(X.iloc[index]["uid"]) + "\n")
             inputfile.write(corrected_question + "\n")
-            outputfile.write(str(y[index]) + "\n")
+            outputfile.write(str(le.transform([y[index]])[0]) + "\n")
+
+
+#            if X.iloc[index]["paraphrased_question"]:
+#                corrected_question = str(X.iloc[index]["paraphrased_question"]).strip().replace("&nbsp", " ") \
+#                    .replace("\n", " ").replace("{", "").replace("}", "").replace("<", "").replace(">", "")
+#                idfile.write(str(X.iloc[index]["uid"]) + "_paraphrased_question" + "\n")
+#                inputfile.write(corrected_question + "\n")
+#                outputfile.write(str(y[index]) + "\n")
+
+
+def split_data_test(X, y, dst_dir, le):
+    with open(os.path.join(dst_dir, 'id.txt'), 'w') as idfile, \
+            open(os.path.join(dst_dir, 'input.txt'), 'w') as inputfile, \
+            open(os.path.join(dst_dir, 'output.txt'), 'w') as outputfile:
+        y = y.tolist()
+
+        print((X.shape, len(y)))
+        for index in range(len(X)):
+            corrected_question = str(X.iloc[index]["question"]).strip().replace("&nbsp", " ") \
+                .replace("\n", " ").replace("{", "").replace("}", "").replace("<", "").replace(">", "")
+            idfile.write(str(X.iloc[index]["uid"]) + "\n")
+            inputfile.write(corrected_question + "\n")
+            outputfile.write(str(le.transform([y[index]])[0]) + "\n")
 
 
 def parse(dirpath, cp=''):
@@ -94,12 +121,12 @@ def parse(dirpath, cp=''):
 
 if __name__ == '__main__':
     print('=' * 80)
-    print('Preprocessing LC-QUAD dataset')
+    print('Preprocessing LC-QUAD-2 dataset')
     print('=' * 80)
 
     base_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
     data_dir = os.path.join(base_dir, 'data')
-    lc_quad_dir = os.path.join(data_dir, 'lc-quad')
+    lc_quad_dir = os.path.join(data_dir, 'lc-quad-2-wikidata-2fases-split')
     lib_dir = os.path.join(base_dir, 'lib')
     train_dir = os.path.join(lc_quad_dir, 'train')
     test_dir = os.path.join(lc_quad_dir, 'test')
@@ -111,36 +138,46 @@ if __name__ == '__main__':
         lib_dir,
         os.path.join(lib_dir, 'stanford-parser/stanford-parser.jar'),
         os.path.join(lib_dir, 'stanford-parser/stanford-parser-3.9.1-models.jar')])
+    print(classpath)
 
     # Load Data
-    df_train = pd.read_json(os.path.join(lc_quad_dir, "train-data.json"))
-    df_test = pd.read_json(os.path.join(lc_quad_dir, "test-data.json"))
-    df = pd.concat([df_train, df_test], ignore_index=True)
+    import math
 
-    desired_templates = df['sparql_template_id'].value_counts() >= 50
-    desired_templates = desired_templates.index[desired_templates == True].tolist()
-    df = df[df['sparql_template_id'].isin(desired_templates)]
+    df_dummy = pd.read_json(os.path.join(lc_quad_dir, "DummyTemplatesWikidata.json"))
 
-    X = df.loc[:, df.columns != 'sparql_template_id']
-    y = df['sparql_template_id'].tolist()
+    # df_dummy.rename(columns={"Dummy_id_wikidata": "template_id_dummy"})
+    df_dummy = df_dummy[df_dummy.question.notnull()]
+    df_dummy = df_dummy[~df_dummy.question.isin(["n/a", "na"])]
+    df_dummy["template_id_dummy"] = np.floor(df_dummy["Dummy_id_wikidata"])
+    # df_dummy["template_id_dummy"] = df_dummy["Dummy_id_wikidata"]
+    df_dummy.drop_duplicates(inplace=True, subset=["question"])
 
-    print(df['sparql_template_id'].value_counts())
+    df_dummy.drop(df_dummy[df_dummy.question.str.contains("{|}|<|>", regex=True)].index, inplace=True)
+    print(df_dummy[df_dummy.question.str.contains("{|}|<|>", regex=True)].template_id_dummy.value_counts())
 
-    for index in range(len(y)):
-        id = y[index]
-        if id >= 300 and id < 500:  # Collapse 3xx or 4xx templates to their corresponding template - 300 id since all that differentiates them is extra rdf:type class triple which can be added as an optional triple to SPARQL Query
-            y[index] = id - 300
+    df_dummy.drop(df_dummy[df_dummy.question.str.startswith('"')].index, inplace=True)
+    print(df_dummy[df_dummy.question.str.startswith('"')].template_id_dummy.value_counts())
 
-        if y[
-            index] == 152:  # Effectively Template 152 and Template 151 are the same template or can be converted into single SPARQL Query
-            y[index] = 151
+    # df_dummy.drop_duplicates(inplace=True, subset=["question"])
 
-    y = pd.Series(y)
+    print(len(df_dummy))
+    print(len(df_dummy.template_id_dummy))
+    print(len(df_dummy["Dummy_wikidata"]))
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    print(df_dummy)
 
-    split_data(X_train, y_train, train_dir)
-    split_data(X_test, y_test, test_dir)
+    le = LabelEncoder()
+    le.fit(df_dummy.template_id_dummy.values)
+
+    np.save(os.path.join(lc_quad_dir, "le_dummy.npy"), le.classes_)
+
+    X = df_dummy.drop(columns=['template_id_dummy'])
+    Y = pd.Series(df_dummy['template_id_dummy'].tolist())
+
+    X_train, X_test, y_train, y_test = train_test_split(X, Y, stratify=Y, test_size=0.1, random_state=42)
+
+    split_data(X_train, y_train, train_dir, le)
+    split_data_test(X_test, y_test, test_dir, le)
 
     # parse sentences
     parse(train_dir, cp=classpath)

@@ -1,5 +1,15 @@
-checkpoints/
-data/
+lc-quad-2-wikidata/
+*.vec
+__pycache__/
+*.json
+*.csv
+*.png
+*.zip
+.idea/
+venv/
+.DS_store
+checkpoints*/
+data*/
 lib/*.class
 lib/stanford-parser
 lib/stanford-tagger
@@ -7,5 +17,6 @@ lib/stanford-tagger
 .ftpignore
 .vscode/
 .ipynb_checkpoints/
-analysis
+analysis*/
 .word_vectors_cache
+x

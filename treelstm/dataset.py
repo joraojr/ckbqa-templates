@@ -12,7 +12,7 @@ import nltk
 
 
 class LC_QUAD_Dataset(data.Dataset):
-    def __init__(self, path, vocab_toks, vocab_pos, vocab_rels, num_classes):
+    def __init__(self, path, vocab_toks, vocab_pos, vocab_rels, num_classes, use_group=False):
         super(LC_QUAD_Dataset, self).__init__()
         self.vocab_toks = vocab_toks
         self.vocab_pos = vocab_pos
@@ -23,11 +23,20 @@ class LC_QUAD_Dataset(data.Dataset):
         self.rels_sentences = self.read_sentences(os.path.join(path, 'input.rels'), self.vocab_rels)
         self.trees = self.read_trees(os.path.join(path, 'input.parents'))
 
-        if num_classes > 0:
-            self.labels = self.read_labels(os.path.join(path, 'output.txt'))
+        self.question_type = self.read_labels(os.path.join(path, 'question_type.txt'))
+
+        if not use_group:
+            if num_classes > 0:
+                self.labels = self.read_labels(os.path.join(path, 'output.txt'))
+            else:
+                self.labels = torch.zeros(len(self.toks_sentences), dtype=torch.float)
+            self.size = self.labels.size(0)
         else:
-            self.labels = torch.zeros(len(self.toks_sentences), dtype=torch.float)
-        self.size = self.labels.size(0)
+            if num_classes > 0:
+                self.labels = self.read_labels(os.path.join(path, 'output_group.txt'))
+            else:
+                self.labels = torch.zeros(len(self.toks_sentences), dtype=torch.float)
+            self.size = self.labels.size(0)
         # asd
 
     def __len__(self):
@@ -39,14 +48,16 @@ class LC_QUAD_Dataset(data.Dataset):
         pos_sent = deepcopy(self.pos_sentences[index])
         rels_sent = deepcopy(self.rels_sentences[index])
         label = deepcopy(self.labels[index])
-        return (tree, toks_sent, pos_sent, rels_sent, label)
+        question_type = deepcopy(self.question_type[index])
+        return (tree, toks_sent, pos_sent, rels_sent, label, question_type)
 
     def read_sentences(self, filename, vocab):
 
         with open(filename, 'r') as f:
             sentences = []
             for line in tqdm(f.readlines()):
-                indices = vocab.convertToIdx(line.split(), Constants.UNK_WORD)
+                line = line.replace('\n', "")
+                indices = vocab.convertToIdx(line.split(" "), Constants.UNK_WORD)
                 sentences.append(torch.tensor(indices, dtype=torch.long))
         return sentences
 

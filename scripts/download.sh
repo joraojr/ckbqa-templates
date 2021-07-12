@@ -7,6 +7,14 @@ cd data/lc-quad/
 wget -q -c https://raw.githubusercontent.com/AskNowQA/LC-QuAD/data/train-data.json
 wget -q -c https://raw.githubusercontent.com/AskNowQA/LC-QuAD/data/test-data.json
 
+mkdir -p data/lc-quad-2
+cd data/lc-quad-2/
+
+wget -q -c https://raw.githubusercontent.com/AskNowQA/LC-QuAD2.0/master/dataset/train.json
+wget -q -c https://raw.githubusercontent.com/AskNowQA/LC-QuAD2.0/master/dataset/test.json
+
+
+
 echo "Download LC-QUAD Template Metadata"
 wget -q -c https://raw.githubusercontent.com/AskNowQA/LC-QuAD/data/resources/templates.json
 cd ../../

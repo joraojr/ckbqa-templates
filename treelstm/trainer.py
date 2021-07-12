@@ -60,7 +60,7 @@ class Trainer(object):
         return torch.unsqueeze(torch.stack(char_vectors), 1)
 
     def get_data(self, data, num_classes):
-        tree, toks_sent, pos_sent, rels_sent, label = data
+        tree, toks_sent, pos_sent, rels_sent, label, question_type = data
         toks_sent = Var(toks_sent)
         pos_sent = Var(pos_sent)
         rels_sent = Var(rels_sent)
@@ -70,9 +70,15 @@ class Trainer(object):
         toks_emb = torch.unsqueeze(self.embeddings['toks'](toks_sent), 1)
         pos_emb = torch.unsqueeze(self.embeddings['pos'](pos_sent), 1)
         rels_emb = torch.unsqueeze(self.embeddings['rels'](rels_sent), 1)
-        chars_emb = self.get_char_vector(toks_sent)
+        #question_type_emb = torch.unsqueeze(torch.stack(
+        #    len(toks_emb) * [Var(utils.map_label_to_target(question_type, num_classes, self.vocabs['question_type']))]),1)
 
-        return tree, torch.cat((toks_emb, pos_emb, rels_emb, chars_emb), 2), target
+        # chars_emb = self.get_char_vector(toks_sent)
+
+        #return tree, torch.cat((toks_emb, pos_emb, rels_emb, question_type_emb), 2), target
+        return tree, torch.cat((toks_emb, pos_emb, rels_emb), 2), target
+        # return tree, torch.cat((pos_emb, rels_emb), 2), target
+
 
     # helper function for training
     def train(self, dataset):
@@ -82,17 +88,6 @@ class Trainer(object):
         self.optimizer.zero_grad()
         total_loss, k = 0.0, 0
         indices = torch.randperm(len(dataset), dtype=torch.long)
-
-        #        loader = DataLoader(
-        #            dataset,
-        #            batch_size=self.args.batchsize,
-        #            shuffle=False,
-        #        )#
-        #
-        #        for batch_idx, data in enumerate(loader):
-        #            print((batch_idx, data))##
-
-        # pass
 
         for idx in tqdm(range(len(dataset)), desc='Training epoch ' + str(self.epoch + 1) + ''):
             tree, emb, target = self.get_data(dataset[indices[idx]], dataset.num_classes)

@@ -1,19 +1,27 @@
 import argparse
 
+
 def parse_args():
     parser = argparse.ArgumentParser(
-        description='PyTorch TreeLSTM for Sentence Similarity on Dependency Trees')
+        description='PyTorch AttTreeLSTM for Complex Knowledge Base Question Answering')
     # data arguments
-    parser.add_argument('--data', default='data/lc-quad-2-dummy/',
+    parser.add_argument('--attention', default=True, action='store_true', help='use AttTreeLSTM')
+
+    # TODO Add:
+   #parser.add_argument('--use-group', default=False, action='store_true', help='use group classification')
+
+    parser.add_argument('--data', default='data/lc-quad-2-wikidata-parafrase/',
                         help='path to dataset')
-    parser.add_argument('--save', default='checkpoints-lcquad2-dummy/',
+    parser.add_argument('--analysis', default='analysis-lc-quad-2-wikidata-parafrase/',
+                        help='path to save analysis')
+    parser.add_argument('--save', default='checkpoints-lc-quad-2-wikidata-parafrase/',
                         help='directory to save checkpoints in')
-    parser.add_argument('--expname', type=str, default='rnn-question-answering',
+    parser.add_argument('--expname', type=str, default='test--attention--and--fasttext',
                         help='Name to identify experiment')
     # model arguments
     parser.add_argument('--mem_dim', default=150, type=int,
                         help='Size of TreeLSTM cell state')
-    parser.add_argument('--freeze_embed', action='store_true',
+    parser.add_argument('--frgeeze_embed', action='store_true',
                         help='Freeze word embeddings')
     # training arguments
     parser.add_argument('--epochs', default=100, type=int,
