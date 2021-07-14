@@ -5,18 +5,19 @@ def parse_args():
     parser = argparse.ArgumentParser(
         description='PyTorch AttTreeLSTM for Complex Knowledge Base Question Answering')
     # data arguments
-    parser.add_argument('--attention', default=True, action='store_true', help='use AttTreeLSTM')
+    parser.add_argument('--attention', default=False, action='store_true', help='use AttTreeLSTM')
 
-    # TODO Add:
-   #parser.add_argument('--use-group', default=False, action='store_true', help='use group classification')
+    parser.add_argument('--use_group', default=False, action='store_true', help='Use group as target')
+
+    parser.add_argument('--use_parafrase', default=False, action='store_true', help='Use group as target')
 
     parser.add_argument('--data', default='data/lc-quad-2-wikidata-parafrase/',
                         help='path to dataset')
-    parser.add_argument('--analysis', default='analysis-lc-quad-2-wikidata-parafrase/',
+    parser.add_argument('--analysis', default='analysis/',
                         help='path to save analysis')
-    parser.add_argument('--save', default='checkpoints-lc-quad-2-wikidata-parafrase/',
+    parser.add_argument('--save', default='checkpoints/',
                         help='directory to save checkpoints in')
-    parser.add_argument('--expname', type=str, default='test--attention--and--fasttext',
+    parser.add_argument('--expname', type=str, default='question-target-tree_lstm-fasttext',
                         help='Name to identify experiment')
     # model arguments
     parser.add_argument('--mem_dim', default=150, type=int,

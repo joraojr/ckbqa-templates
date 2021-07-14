@@ -115,8 +115,10 @@ def main():
     vocab_rels = Vocab(filename=os.path.join(args.data, 'vocab_rels.txt'))
     vocab_question_type = Vocab(filename=os.path.join(args.data, 'vocab_question_type.txt'))
 
-    vocab_output = Vocab(filename=os.path.join(args.data, 'vocab_output.txt'))
-
+    if not args.use_group:
+        vocab_output = Vocab(filename=os.path.join(args.data, 'vocab_output.txt'))
+    else:
+        vocab_output = Vocab(filename=os.path.join(args.data, 'vocab_output_group.txt'))
     # Set number of classes based on vocab_output
     args.num_classes = vocab_output.size()
 
@@ -127,27 +129,39 @@ def main():
     logger.debug('==> LC-QUAD output vocabulary size : %d ' % vocab_output.size())
 
     # load LC_QUAD dataset splits
-    train_file = os.path.join(args.data, 'pth/lc_quad_train.pth')
+    if not args.use_parafrase:
+        train_file = os.path.join(args.data, 'pth/lc_quad_train.pth')
+    else:
+        train_dir = os.path.join(args.data, 'train_parafrase/')
+        train_file = os.path.join(args.data, 'pth/lc_quad_train_parafrase.pth')
+
+    if args.use_group:
+        train_file = train_file + "_group"
     if os.path.isfile(train_file):
         train_dataset = torch.load(train_file)
     else:
-        train_dataset = LC_QUAD_Dataset(train_dir, vocab_toks, vocab_pos, vocab_rels, args.num_classes)
+        train_dataset = LC_QUAD_Dataset(train_dir, vocab_toks, vocab_pos, vocab_rels, args.num_classes, args.use_group)
         torch.save(train_dataset, train_file)
     logger.debug('==> Size of train data   : %d ' % len(train_dataset))
 
     dev_file = os.path.join(args.data, 'pth/lc_quad_dev.pth')
+    if args.use_group:
+        dev_file = dev_file + "_group"
     if os.path.isfile(dev_file):
         dev_dataset = torch.load(dev_file)
     else:
-        dev_dataset = LC_QUAD_Dataset(dev_dir, vocab_toks, vocab_pos, vocab_rels, args.num_classes)
+        dev_dataset = LC_QUAD_Dataset(dev_dir, vocab_toks, vocab_pos, vocab_rels, args.num_classes, args.use_group)
         torch.save(dev_dataset, dev_file)
     logger.debug('==> Size of test data    : %d ' % len(dev_dataset))
 
     test_file = os.path.join(args.data, 'pth/lc_quad_test.pth')
+    if args.use_group:
+        test_file = test_file + "_group"
+
     if os.path.isfile(test_file):
         test_dataset = torch.load(test_file)
     else:
-        test_dataset = LC_QUAD_Dataset(test_dir, vocab_toks, vocab_pos, vocab_rels, args.num_classes)
+        test_dataset = LC_QUAD_Dataset(test_dir, vocab_toks, vocab_pos, vocab_rels, args.num_classes, args.use_group)
         torch.save(test_dataset, test_file)
     logger.debug('==> Size of test data    : %d ' % len(test_dataset))
 
@@ -213,7 +227,7 @@ def main():
         )
 
     metrics = Metrics()
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=2, gamma=0.25)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.05)
 
     # create trainer object for training and testing
     trainer = Trainer(args,
@@ -238,15 +252,13 @@ def main():
 
     for epoch in range(args.epochs):
         print("\n" * 5)
-        # scheduler.step() # TODO FIX IT to Detected call of `lr_scheduler.step()` before `optimizer.step()
 
         # Train Model
         trainer.train(train_dataset)
-        scheduler.step()
 
         # Test Model on Training Dataset
-        train_loss, train_pred = trainer.test(train_dataset)
-        train_acc = metrics.accuracy_score(train_pred, train_dataset.labels, vocab_output)
+        # train_loss, train_pred = trainer.test(train_dataset)
+        # train_acc = metrics.accuracy_score(train_pred, train_dataset.labels, vocab_output)
 
         # print('==> Train loss   : %f \t' % train_loss, end="")
         # print('Epoch ', str(epoch + 1), 'train percentage ', train_acc)
@@ -255,7 +267,7 @@ def main():
 
         # Dev Model on Testing Dataset
         dev_loss, dev_pred = trainer.test(dev_dataset)
-        dev_acc = metrics.accuracy_score(dev_pred, dev_dataset.labels, vocab_output)
+        dev_acc = metrics.balanced_accuracy(dev_pred, dev_dataset.labels, vocab_output)
 
         print('==> Dev loss   : %f \t' % dev_loss, end="")
         print('Epoch ', str(epoch + 1), 'dev percentage ', dev_acc)
@@ -263,7 +275,7 @@ def main():
 
         # Test Model on Testing Dataset
         test_loss, test_pred = trainer.test(test_dataset)
-        test_acc = metrics.accuracy_score(test_pred, test_dataset.labels, vocab_output)
+        test_acc = metrics.balanced_accuracy(test_pred, test_dataset.labels, vocab_output)
 
         print('==> Test loss   : %f \t' % test_loss, end="")
         print('Epoch ', str(epoch + 1), 'test percentage ', test_acc)
@@ -276,6 +288,7 @@ def main():
                                                                                                               dev_acc))
         checkpoint = {'trainer': trainer, 'dev_accuracy': dev_acc, 'test_accuracy': test_acc, 'scheduler': scheduler}
         torch.save(checkpoint, checkpoint_filename)
+        scheduler.step()
 
 
 def write_analysis_file(file_name, epoch, predictions, labels, accuracy_label, accuracy, loss, vocab_output):

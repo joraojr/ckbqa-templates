@@ -102,9 +102,10 @@ if __name__ == '__main__':
     lc_quad_dir = os.path.join(data_dir, 'lc-quad-2-wikidata-parafrase')
     lib_dir = os.path.join(base_dir, 'lib')
     train_dir = os.path.join(lc_quad_dir, 'train')
+    train_parafrase_dir = os.path.join(lc_quad_dir, 'train_parafrase')
     test_dir = os.path.join(lc_quad_dir, 'test')
     valid_dir = os.path.join(lc_quad_dir, 'dev')
-    make_dirs([train_dir, test_dir, valid_dir])
+    make_dirs([train_dir, test_dir, valid_dir, train_parafrase_dir])
     make_dirs([os.path.join(lc_quad_dir, 'pth')])
 
     # java classpath for calling Stanford parser
@@ -141,7 +142,7 @@ if __name__ == '__main__':
 
     for index, row in df_dummy.iterrows():
         df_full.append({
-            "uid": row["uid"],
+            "uid": str(row["uid"]),
             "question": row["question"],
             "Dummy_wikidata": row["Dummy_wikidata"],
             "template_id_dummy": row["Dummy_id_wikidata"],
@@ -200,8 +201,11 @@ if __name__ == '__main__':
     df_full.to_json("./df_full.json", orient="records", default_handler=str, indent=3)
     df_full.to_csv("./df_full.csv")
 
-    df_train, df_test = train_test_split(df_full, shuffle=True, stratify=df_full.template_id_dummy, test_size=0.1,
-                                         random_state=RANDOM_SEED)
+    df_full_not_paraphrased = df_full[~df_full.uid.str.contains("_paraphrased_question")]
+
+    df_train, df_test = train_test_split(df_full_not_paraphrased, shuffle=True,
+                                         stratify=df_full_not_paraphrased.template_id_dummy,
+                                         test_size=0.15, random_state=RANDOM_SEED)
 
     df_train, df_valid = train_test_split(df_train, shuffle=True, stratify=df_train.template_id_dummy, test_size=0.1,
                                           random_state=RANDOM_SEED)
@@ -214,12 +218,21 @@ if __name__ == '__main__':
     df_valid.to_csv("./df_dev.csv")
     df_test.to_csv("./df_test.csv")
 
-    df_train.to_json("./df_train_novo.json", orient="records", default_handler=str)
+    df_train.to_json("./df_train_novo_sem_parafrase.json", orient="records", default_handler=str)
     df_test.to_json("./df_test_novo.json", orient="records", default_handler=str)
     df_valid.to_json("./df_dev_novo.json", orient="records", default_handler=str)
 
+    df_train_parafrase = df_full[(~df_full.uid.isin(df_test.uid)) & (~df_full.uid.isin(df_valid.uid))]
+
+    print(df_train_parafrase.template_id_dummy.value_counts())
+
+    df_train_parafrase.to_json("./df_train_novo_com_parafrase.json", orient="records", default_handler=str)
+
     X_train = df_train.drop(columns=['template_id_dummy'])
     y_train = pd.Series(df_train['template_id_dummy'].tolist())
+
+    X_train_parafrase = df_train_parafrase.drop(columns=['template_id_dummy'])
+    y_train_parafrase = pd.Series(df_train_parafrase['template_id_dummy'].tolist())
 
     X_test = df_test.drop(columns=['template_id_dummy'])
     y_test = pd.Series(df_test['template_id_dummy'].tolist())
@@ -228,11 +241,13 @@ if __name__ == '__main__':
     y_valid = pd.Series(df_valid['template_id_dummy'].tolist())
 
     split_data(X_train, y_train, train_dir, le)
+    split_data(X_train_parafrase, y_train_parafrase, train_parafrase_dir, le)
     split_data(X_test, y_test, test_dir, le)
     split_data(X_valid, y_valid, valid_dir, le)
 
     # parse sentences
     parse(train_dir, cp=classpath)
+    parse(train_parafrase_dir, cp=classpath)
     parse(test_dir, cp=classpath)
     parse(valid_dir, cp=classpath)
 
