@@ -208,7 +208,7 @@ if __name__ == '__main__':
     #    df = pd.concat([df_train, df_test], ignore_index=True)
     #    df = df[df.question.notnull()]
 
-    # desired_templates = pd.read_csv(os.path.join(lc_quad_dir, "new_templates_dummy.csv"))
+    # desired_templates = pd.read_csv(os.path.join(dataset_dir, "new_templates_dummy.csv"))
     # print(desired_templates["Dummy Template dbpedia18"])
     #
     #

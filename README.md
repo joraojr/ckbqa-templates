@@ -2,16 +2,17 @@
 
 Knowledge Base Question Answering systems (KBQA) aim to find answers for natural language questions over a knowledge
 base. Recent approaches have achieved promising results handling simple questions, but struggle to deal with constraint
-and multiple hops questions. This repository presents a template matching approach for Complex KBQA systems (C-KBQA) using the combination of Semantic Parsing and Neural Networks techniques to classify natural language questions
-into answer templates.
+and multiple hops questions. This repository presents a template matching approach for Complex KBQA systems (C-KBQA)
+using the combination of Semantic Parsing and Neural Networks techniques to classify natural language questions into
+answer templates.
 
 An attention mechanism was created to assist a Tree-LSTM in selecting the most important information. In the so-called
-Hereditary Attention, each neural network cell inherits the attention from another neural network cell, in a bottom-up
-way.
+Hereditary Tree-LSTM (HTL), each neural network cell inherits the attention from another neural network cell, in a
+bottom-up way.
 
 Furthermore, we presented the problems found in C-KBQA datasets and released a cleaned version of the LC-QuAD 2.0
-dataset containing template answers, so-called LC-QuAD 2.1 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5508297.svg)](https://doi.org/10.5281/zenodo.5508297)
-
+dataset containing template answers, so-called LC-QuAD
+2.1 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5508297.svg)](https://doi.org/10.5281/zenodo.5508297)
 
 ## Setup
 
@@ -38,9 +39,10 @@ mv stanford-parser-full-2018-02-27/ lib/stanford-parser
 rm stanford-parser-full-2018-02-27.zip
 ```
 
-##Dataset
+## Dataset
 
-TBC
+A template script for preprocessing your data as input for HTL. You have to replace the `TODO` tags with you data
+information.
 
 ## How to use
 
