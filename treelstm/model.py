@@ -141,6 +141,10 @@ class Self_Attn(nn.Module):
         self.key = nn.Linear(in_dim, in_dim)
         self.value = nn.Linear(in_dim, in_dim)
         self.query = nn.Linear(in_dim, in_dim)
+        # self.key = nn.Parameter(torch.rand(1, in_dim, in_dim))
+        # self.query = nn.Parameter(torch.rand(1, in_dim, in_dim))
+        # self.value = nn.Parameter(torch.rand(1, in_dim, in_dim))
+
         self.normalizer = 1 / np.sqrt(in_dim)
 
         self.softmax = nn.Softmax(dim=-1)  # last dim
@@ -253,8 +257,8 @@ class AttChildSumTreeLSTM(nn.Module):
         child_h: (1, num_children, mem_dim)
         """
         if tree.num_children == 0:
-            child_c = Var(torch.zeros(1, 4, self.mem_dim))
-            child_h = Var(torch.zeros(1, 4, self.mem_dim))
+            child_c = Var(torch.zeros(1, 1, self.mem_dim))
+            child_h = Var(torch.zeros(1, 1, self.mem_dim))
         else:
             child_c = Var(torch.Tensor(1, tree.num_children, self.mem_dim))
             child_h = Var(torch.Tensor(1, tree.num_children, self.mem_dim))

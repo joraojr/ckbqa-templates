@@ -11,9 +11,9 @@ from .tree import Tree
 import nltk
 
 
-class LC_QUAD_Dataset(data.Dataset):
+class Dataset(data.Dataset):
     def __init__(self, path, vocab_toks, vocab_pos, vocab_rels, num_classes, use_group=False):
-        super(LC_QUAD_Dataset, self).__init__()
+        super(Dataset, self).__init__()
         self.vocab_toks = vocab_toks
         self.vocab_pos = vocab_pos
         self.vocab_rels = vocab_rels
@@ -23,7 +23,7 @@ class LC_QUAD_Dataset(data.Dataset):
         self.rels_sentences = self.read_sentences(os.path.join(path, 'input.rels'), self.vocab_rels)
         self.trees = self.read_trees(os.path.join(path, 'input.parents'))
 
-        self.question_type = self.read_labels(os.path.join(path, 'question_type.txt'))
+        #        self.question_type = self.read_labels(os.path.join(path, 'question_type.txt'))
 
         if not use_group:
             if num_classes > 0:
@@ -48,8 +48,9 @@ class LC_QUAD_Dataset(data.Dataset):
         pos_sent = deepcopy(self.pos_sentences[index])
         rels_sent = deepcopy(self.rels_sentences[index])
         label = deepcopy(self.labels[index])
-        question_type = deepcopy(self.question_type[index])
-        return (tree, toks_sent, pos_sent, rels_sent, label, question_type)
+        return tree, toks_sent, pos_sent, rels_sent, label
+        # question_type = deepcopy(self.question_type[index])
+        # return (tree, toks_sent, pos_sent, rels_sent, label, question_type)
 
     def read_sentences(self, filename, vocab):
 

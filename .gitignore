@@ -18,5 +18,5 @@ lib/stanford-tagger
 .vscode/
 .ipynb_checkpoints/
 analysis*/
+final_results/
 .word_vectors_cache
-x

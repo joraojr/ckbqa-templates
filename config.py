@@ -5,7 +5,7 @@ def parse_args():
     parser = argparse.ArgumentParser(
         description='PyTorch AttTreeLSTM for Complex Knowledge Base Question Answering')
     # data arguments
-    parser.add_argument('--attention', default=False, action='store_true', help='use AttTreeLSTM')
+    parser.add_argument('--attention', default=True, action='store_true', help='use AttTreeLSTM')
 
     parser.add_argument('--use_group', default=False, action='store_true', help='Use group as target')
 
@@ -17,7 +17,7 @@ def parse_args():
                         help='path to save analysis')
     parser.add_argument('--save', default='checkpoints/',
                         help='directory to save checkpoints in')
-    parser.add_argument('--expname', type=str, default='question-target-tree_lstm-fasttext',
+    parser.add_argument('--expname', type=str, default='ATT_TREE_group_paraphase',
                         help='Name to identify experiment')
     # model arguments
     parser.add_argument('--mem_dim', default=150, type=int,
@@ -25,7 +25,7 @@ def parse_args():
     parser.add_argument('--frgeeze_embed', action='store_true',
                         help='Freeze word embeddings')
     # training arguments
-    parser.add_argument('--epochs', default=100, type=int,
+    parser.add_argument('--epochs', default=50, type=int,
                         help='number of total epochs to run')
     parser.add_argument('--batchsize', default=25, type=int,
                         help='batchsize for optimizer updates')
@@ -38,8 +38,8 @@ def parse_args():
     parser.add_argument('--sparse', action='store_true',
                         help='Enable sparsity for embeddings, \
                               incompatible with weight decay')
-    parser.add_argument('--optim', default='adam',
-                        help='optimizer (default: adam)')
+    parser.add_argument('--optim', default='sgd',
+                        help='optimizer (default: sgd)')
 
     # miscellaneous options
     parser.add_argument('--seed', default=42, type=int,
