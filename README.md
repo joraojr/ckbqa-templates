@@ -16,7 +16,13 @@ dataset containing template answers, so-called LC-QuAD
 
 ## Setup
 
-Download Facebook FastText which is used as the embedding model:
+* Pip requirements
+
+```
+pip install -r requirements.txt
+```
+
+* Download Facebook FastText which is used as the embedding model:
 
 ```
 wget https://dl.fbaipublicfiles.com/fasttext/vectors-wiki/wiki.en.zip # Download FastText
@@ -25,7 +31,7 @@ mv wiki.en.bin data/fasttext
 rm wiki.en.zip
 ```
 
-Download Stanford parser and tagger
+* Download Stanford parser and tagger
 
 ```
 wget -q -c https://nlp.stanford.edu/software/stanford-postagger-2018-02-27.zip
@@ -47,8 +53,10 @@ information.
 ## How to use
 
 ```
-$python main.py # Further configuration options can be found in config.py
+$python main.py 
 ```
+
+Further configuration options can be found in config.py
 
 ---
 **NOTE**
