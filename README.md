@@ -50,6 +50,34 @@ rm stanford-parser-full-2018-02-27.zip
 A template script for preprocessing your data as input for HTL. You have to replace the `TODO` tags with you data
 information.
 
+Basic dataset structure after preprocessing:
+
+```
+-dataset_folder
+--test
+----input.len
+----input.parents
+----input.pos
+----input.rels
+----input.toks
+----output.txt
+--train
+----input.len
+----input.parents
+----input.pos
+----input.rels
+----input.toks
+----output.txt
+--vocab_chars.txt
+--vocab_output.txt
+--vocab_pos.txt
+--vocab_rels.txt
+--vocab_toks.txt
+```
+
+Additional data can be provided by your script!
+
+
 ## How to use
 
 ```
